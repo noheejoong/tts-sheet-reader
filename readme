@@ -1,0 +1,11 @@
+## Setup
+
+1. Download this repository as a ZIP file.
+2. Copy `.env.example` and rename it to `.env`.
+3. Fill in your own values:
+   - `SPREADSHEET_ID`
+   - `SHEET_NAME`
+   - `RANGE`
+   - `ELEVENLABS_API_KEY`
+   - `ELEVENLABS_VOICE_IDS`
+4. Run the program.

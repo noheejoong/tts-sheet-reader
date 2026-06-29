@@ -1,0 +1,28 @@
+# Environment
+.env
+
+# Google Service Account
+service-account.json
+
+# Dependencies
+node_modules/
+
+# Generated files
+output/
+group_output/
+training_playlist_1.0x/
+weekly-practice/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
