@@ -2,7 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
-require("dotenv").config();
+const ROOT_DIR = path.join(__dirname, "..");
+
+require("dotenv").config({ path: path.join(ROOT_DIR, ".env") });
 
 const AUDIO_SPEED = Number(process.env.AUDIO_SPEED || 1.0);
 
@@ -12,11 +14,11 @@ const OUTPUT_SPEED_FOLDER =
 
 function getShadowingDir() {
   if (!OUTPUT_SPEED_FOLDER) {
-    return path.join(__dirname, "shadowing");
+    return path.join(ROOT_DIR, "shadowing");
   }
 
   return path.join(
-    __dirname,
+    ROOT_DIR,
     `shadowing_${AUDIO_SPEED.toFixed(1)}x`
   );
 }
@@ -25,11 +27,11 @@ const SHADOWING_DIR = getShadowingDir();
 
 function getMergedDir() {
   if (!OUTPUT_SPEED_FOLDER) {
-    return path.join(__dirname, "merged");
+    return path.join(ROOT_DIR, "merged");
   }
 
   return path.join(
-    __dirname,
+    ROOT_DIR,
     `merged_${AUDIO_SPEED.toFixed(1)}x`
   );
 }
@@ -85,7 +87,7 @@ function mergeShadowingFiles() {
     const lastNo = lastFile.match(/_(\d+)_shadowing\.mp3$/)?.[1] || String((batchIndex + 1) * BATCH_SIZE).padStart(3, "0");
 
     const listFile = path.join(
-      __dirname,
+      ROOT_DIR,
       `merge-list-${safeSheetName}-${firstNo}-${lastNo}.txt`
     );
 

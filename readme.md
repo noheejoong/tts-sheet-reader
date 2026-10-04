@@ -35,9 +35,9 @@ Please install the following before running the program:
 Clone the repository and install dependencies.
 
 ```bash
-git clone <repository-url>
-cd <repository-name>
-npm install
+git clone https://github.com/noheejoong/tts-sheet-reader.git
+cd tts-sheet-reader
+npm ci
 ```
 
 Or download the repository as a ZIP file from GitHub and extract it.
@@ -76,6 +76,7 @@ The service account needs at least Viewer permission.
 | ELEVENLABS_API_KEY       | ElevenLabs API Key                                 |
 | ELEVENLABS_VOICE_IDS     | Comma-separated Voice IDs                          |
 | ELEVENLABS_MODEL_ID      | ElevenLabs Model ID                                |
+| ENABLE_SENTENCE_LEVEL    | Generate sentence-level files (default: false)     |
 | REPEAT_COUNT             | Sentence repeat count                              |
 | DEFAULT_SENTENCE_PAUSE   | Default pause between sentences                    |
 | PAUSE_SECONDS            | Pause length                                       |
@@ -98,7 +99,30 @@ npm start
 or
 
 ```bash
-node main.js
+node src/main.js
+```
+
+### Options
+
+| Option | Description |
+| --- | --- |
+| `--dry-run` | Read the sheet and show the plan (TTS new/reuse counts, characters to generate, output paths, weekly folder, Drive target). No TTS call, no file or voice-map change. |
+| `--output-dir <dir>` | Put all outputs and `voice-map.json` under `<dir>` (for verification). |
+| `--max-groups <n>` | Process only the first `n` complete groups (for verification). |
+| `--no-drive` | Skip copying to Google Drive. |
+
+```bash
+npm start -- --dry-run
+```
+
+## Project Structure
+
+```text
+src/                  # source code (entry point: src/main.js)
+test/                 # tests (mock TTS, temporary folders)
+.env                  # settings (project root)
+service-account.json  # Google service account (project root)
+voice-map.json        # generated local group voice assignments (ignored by Git)
 ```
 
 ## Output Folders
@@ -106,10 +130,29 @@ node main.js
 The following folders are generated during execution:
 
 ```text
-output/
-group_output/
-training_playlist_1.0x/
-weekly-practice/
+output/{sheet-key}/                       # sentence-level TTS (ENABLE_SENTENCE_LEVEL=true)
+group_output/{sheet-key}/                 # group-level TTS
+training_playlist[_{speed}x]/{sheet-key}/ # repeated/paused playlist files
+weekly-practice/{YYYY-Www}/Day N/
+```
+
+`{sheet-key}` is `sheet_{12-char hash of spreadsheet ID + sheet ID}`.
+It does not include the sheet name, so renaming a sheet keeps its cache and voices,
+and sheets with the same name or row numbers never share files.
+Each sheet folder has a `sheet-info.json` with the current sheet name.
+
+Each MP3 has a `*.mp3.meta.json` file next to it. A file is reused only when
+its metadata matches the current text, voice, model and processing settings,
+and the file's size and SHA-256 match the metadata. If regeneration fails,
+the previous file and metadata are kept.
+Files without metadata (for example, files from older versions) are never reused.
+
+## Test
+
+Runs with mock TTS and temporary folders. No paid API is called.
+
+```bash
+npm test
 ```
 
 ## Troubleshooting
@@ -147,6 +190,7 @@ ffmpeg -version
 * `.env` is not included in this repository.
 * `service-account.json` is not included in this repository.
 * Generated MP3 files are ignored by Git.
+* `voice-map.json` is generated automatically and stays local to preserve your voice assignments.
 * Each user should use their own ElevenLabs API Key.
 
 ## License

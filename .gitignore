@@ -1,5 +1,7 @@
 # Environment
 .env
+.env.*
+!.env.example
 
 # Google Service Account
 service-account.json
@@ -11,7 +13,11 @@ node_modules/
 output/
 group_output/
 training_playlist_1.0x/
+training_playlist/
+training_playlist_*x/
+voice-map.json
 weekly-practice/
+verify-run/
 
 # Logs
 *.log
